@@ -1,0 +1,9 @@
+
+.actions select{
+    width:33%;
+    display: inline-block;
+}
+
+.margin-left{
+    margin-left: 15px;
+}
