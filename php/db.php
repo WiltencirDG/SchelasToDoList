@@ -24,12 +24,22 @@ Class Db
         }
     }
 
-    function updateTask($id)
+    function updateTask($id,$done)
     {
-        $query = "UPDATE tasks SET done = 1 WHERE id=$id";
+        $query = "UPDATE tasks SET done = $done WHERE id=$id";
         $result = $this->mysql->query($query) or die("Problem to update entry.");
         if ($result){
             return 'Updated';
+        }
+    }
+
+    function getPriorityNameById($id){
+        $query = "SELECT name FROM priorities WHERE id = $id";
+        $result = $this->mysql->query($query) or die("Error to get priority name");
+        if ($result){
+            $name = $result->fetch_array(MYSQLI_ASSOC);
+            return $name['name'];
+
         }
     }
 

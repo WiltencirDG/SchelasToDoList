@@ -10,8 +10,6 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://use.fontawesome.com/23f7c0f4c8.js"></script>
-    <script type="text/javascript" src="js/scripts.js"></script>
-
 
 </header>
 
@@ -24,27 +22,29 @@ $db = new Db;
     <hr>
     <div class="row">
         <div class="col-xs-12">
-
             <form action="./php/addTask.php" method="post" name="actions">
-
                 <div class="col-xs-8 form-group">
                     <label for="addtask" class="control-label">Tarefa</label>
-                    <input id="addtask" class="form-control" name="taskName" value="" type="text"
-                           placeholder="Adicionar tarefa">
+                    <input id="addtask" class="form-control" name="taskName" type="text"
+                           placeholder="Adicionar tarefa" required="required">
                 </div>
                 <label for="dropdown" class="control-label margin-left">Prioridades</label>
                 <div class="col-xs-4 form-group actions">
-                    <select id="dropdown" name="prioId" class="form-control">
-                        <option>Selecione...</option>
-
-                        <option value="">Alta</option>
-
+                    <select id="dropdown" name="prioId" class="form-control" required="required">
+                        <option disabled selected style="display: none">Selecione...</option>
+                        <?php
+                        $queryP = "SELECT * FROM priorities";
+                        $resultsP = $db->mysql->query($queryP);
+                        if ($resultsP->num_rows) {
+                            while ($row = $resultsP->fetch_array()) {
+                                ?>
+                                <option value="<?php print_r($row['id']) ?>"><?php print_r($row['name']) ?></option>
+                            <?php }
+                        } ?>
                     </select>
                     <button type="submit" name="add" class="btn btn-primary margin-left">Adicionar</button>
                 </div>
-
             </form>
-
         </div>
     </div>
     <hr>
@@ -53,18 +53,24 @@ $db = new Db;
             <h3>List To Do</h3>
             <ul class="list-group">
                 <?php
-                $query = "SELECT * FROM tasks WHERE done = 0";
-                $results = $db->mysql->query($query);
-                if($results->num_rows) {
-                while($row = $results->fetch_array()){?>
-                <li class="list-group-item "><?php print_r($row['task']); ?>
-                <a href="php/delTask.php?id=<?php print_r($row['id']);?>"> <button type="button" name="del" class="btn btn-danger btn-xs pull-right margin-left delTask">
-                        <i class="fa fa-trash-o"></i></button></a>
-                <a href="php/updateTask.php?id=<?php print_r($row['id']);?>"><button type="button" name="del" class="btn btn-success btn-xs pull-right updateTask">
-                        <i class="fa fa-check"></i></button></a>
-                </li>
-                <?php
-                }
+                $queryT = "SELECT * FROM tasks WHERE done = 0";
+                $resultsT = $db->mysql->query($queryT);
+                if ($resultsT->num_rows) {
+                    while ($row = $resultsT->fetch_array()) {
+                        ?>
+                        <li class="list-group-item "><?php print_r($row['task']); ?>
+                            <a href="php/delTask.php?id=<?php print_r($row['id']); ?>">
+                                <button type="button" name="del"
+                                        class="btn btn-danger btn-xs pull-right margin-left delTask">
+                                    <i class="fa fa-trash-o"></i></button>
+                            </a>
+                            <a href="php/updateTask.php?id=<?php print_r($row['id']); ?>&done=<?php print_r($row['done']);?>">
+                                <button type="button" name="del" class="btn btn-success btn-xs pull-right updateTask margin-left">
+                                    <i class="fa fa-check"></i></button></a>
+                            <div class="pull-right">Prioridade: <?php print_r($db->getPriorityNameById($row['priority_id']));?></div>
+                        </li>
+                        <?php
+                    }
                 }
                 ?>
             </ul>
@@ -76,13 +82,20 @@ $db = new Db;
             <h3>List Done</h3>
             <ul class="list-group">
                 <?php
-                $query = "SELECT * FROM tasks WHERE done = 1";
-                $results = $db->mysql->query($query);
-                if($results->num_rows) {
-                    while($row = $results->fetch_array()){?>
+                $queryD = "SELECT * FROM tasks WHERE done = 1";
+                $resultsD = $db->mysql->query($queryD);
+                if ($resultsD->num_rows) {
+                    while ($row = $resultsD->fetch_array()) {
+                        ?>
                         <li class="list-group-item list-group-item-success"><?php print_r($row['task']); ?>
-                            <a href="php/delTask.php?id=<?php print_r($row['id']);?>"> <button type="button" name="del" class="btn btn-danger btn-xs pull-right margin-left delTask">
-                                <i class="fa fa-trash-o"></i></button></a>
+                            <a href="php/delTask.php?id=<?php print_r($row['id']); ?>">
+                                <button type="button" name="del"
+                                        class="btn btn-danger btn-xs pull-right margin-left delTask">
+                                    <i class="fa fa-trash-o"></i></button></a>
+                            <a href="php/updateTask.php?id=<?php print_r($row['id']); ?>&done=<?php print_r($row['done']);?>">
+                                <button type="button" name="del" class="btn btn-warning btn-xs pull-right margin-left updateTask">
+                                    <i class="fa fa-check"></i></button></a>
+                            <div class="pull-right">Prioridade: <?php print_r($db->getPriorityNameById($row['priority_id']));?></div>
                         </li>
                         <?php
                     }
